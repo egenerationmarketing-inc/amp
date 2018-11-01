@@ -212,10 +212,10 @@ function amp_theme() {
     'amp_video' => array(
       'variables' => array(
         'file' => NULL,
+        'src' => NULL,
         'description' => NULL,
-        'schema' => NULL,
-        'video_attributes' => NULL,
-        'video_attributes_array' => array()
+        'video_attributes_array' => array(),
+        'fallback_text' => '',
       ),
       'template' => 'templates/amp-video'
     )
@@ -245,21 +245,36 @@ function amp_preprocess_amp_ad(&$variables) {
  */
 function amp_preprocess_amp_video(&$variables) {
   $file = $variables['file'];
-  $variables['src'] = file_create_url($file->uri);
+
+  // Set the SRC from the file URI if available.
+  if (empty($variables['src']) && is_object($file)) {
+    $variables['src'] = file_create_url($file->uri);
+  }
 
   // amp-video can only be displayed if the src for the video is https.
   $variables['scheme'] = file_uri_scheme($variables['src']);
 
   // Use the description as the title text if available.
-  if (empty($variables['description'])) {
+  if (empty($variables['description']) && is_object($file)) {
     $title_text = $file->filename;
   }
   else {
-    $title_text = $variables['description'];
+    $title_text = check_plain($variables['description']);
   }
   $variables['video_attributes_array']['title'] = $title_text;
 
-  // Turn attributes array into a string.
+  // Set the fallback text.
+  if (empty($variables['fallback_text'])) {
+    $variables['fallback_text'] = t("This browser does not support the video element.");
+  }
+}
+
+/**
+ * Implements hook_process_amp_video().
+ */
+function amp_process_amp_video(&$variables) {
+  // Turn attributes array into a string.  Run this after all preprocessors have
+  // had their way with the array.
   $variables['video_attributes'] = drupal_attributes($variables['video_attributes_array']);
 }
 
