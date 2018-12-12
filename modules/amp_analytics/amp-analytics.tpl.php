@@ -12,7 +12,7 @@
  * @see template_preprocess_amp_analytics()
  */
 ?>
-<amp-analytics <?php print $analytics_attributes; ?>>
+<amp-analytics<?php print $analytics_attributes; ?>>
 <script type="application/json">
   <?php print $content; ?>
 </script>

@@ -2,4 +2,4 @@ name = AMP Analytics
 description = Helps render Analytics elements
 core = 7.x
 dependencies[] = amp
-files[] = amp_analytics.test
+files[] = tests/amp_analytics.test

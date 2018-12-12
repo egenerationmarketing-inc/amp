@@ -3,3 +3,4 @@ description = Helper module to run tests
 core = 7.x
 php = 5.5
 dependencies[] = amp
+hidden = TRUE

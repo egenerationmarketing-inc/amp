@@ -6,6 +6,8 @@
  */
 
 class AmpTestCase extends DrupalWebTestCase {
+  protected $profile = 'standard';
+
   protected $admin_user;
 
   public static function getInfo() {

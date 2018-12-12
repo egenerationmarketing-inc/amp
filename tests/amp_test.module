@@ -7,4 +7,14 @@
 
 // This is a little trick to make drupal CI work without composer manager.
 // See https://www.drupal.org/node/2597778#comment-11838528
-require_once DRUPAL_ROOT . '/vendor/autoload.php';
+if (file_exists(DRUPAL_ROOT . '/vendor/autoload.php')) {
+  require_once DRUPAL_ROOT . '/vendor/autoload.php';
+}
+// For sites that have the vendor folder outside the docroot.
+if (file_exists(DRUPAL_ROOT . '/../../vendor/autoload.php')) {
+  require_once DRUPAL_ROOT . '/../../vendor/autoload.php';
+}
+// For sites that have the vendor folder inside sites/all folder.
+if (file_exists(getcwd() . '/sites/all/vendor/autoload.php')) {
+  require_once getcwd() . '/sites/all/vendor/autoload.php';
+}

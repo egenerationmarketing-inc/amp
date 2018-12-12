@@ -99,7 +99,7 @@ function _amp_analytics_pre_render($element) {
     '#type' => 'html_tag',
     '#attributes' => array(
       'src' => 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js',
-      'async' => "",
+      'async' => NULL,
       'custom-element' => 'amp-analytics'
     ),
   );

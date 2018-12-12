@@ -1,8 +1,0 @@
-name = AMP Context Tests
-description = Helper module to run tests
-core = 7.x
-php = 5.5
-dependencies[] = amp
-dependencies[] = context
-dependencies[] = context_ui
-dependencies[] = amp_context

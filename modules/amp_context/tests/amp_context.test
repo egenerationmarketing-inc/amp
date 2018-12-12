@@ -6,6 +6,8 @@
  */
 
 class AmpTestContext extends DrupalWebTestCase {
+  protected $profile = 'standard';
+
   protected $admin_user;
 
   public static function getInfo() {
@@ -18,7 +20,8 @@ class AmpTestContext extends DrupalWebTestCase {
 
   protected function setUp() {
     // Enable modules.
-    parent::setUp('field_ui', 'amp_context_test');
+    parent::setUp('field_ui', 'amp_test', 'context_ui', 'amp_context');
+
     // Clean registry to make plugin available.
     registry_update();
 
