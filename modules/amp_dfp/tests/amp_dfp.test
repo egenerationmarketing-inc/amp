@@ -66,7 +66,26 @@ class AmpDFPTestCase extends DrupalWebTestCase {
     );
     $this->drupalPost(NULL, $edit, t('Save'));
 
+    // Create Sticky DFP tag.
+    $this->drupalGet('admin/structure/dfp_ads/add');
+    $this->assertResponse(200);
+    $edit = array(
+      'machinename' => 'amp_sticky_ad',
+      'slot' => 'AMP Sticky Ad',
+      'size' => '320x50',
+      'amp_sticky' => '1',
+    );
+    $this->drupalPost(NULL, $edit, t('Save'));
+
+    // Blocks placement.
     $this->drupalGet('/admin/structure/block/manage/dfp/amp_ad/configure');
+    $this->assertResponse(200);
+    $edit = array(
+      'regions[bartik]' => 'content',
+    );
+    $this->drupalPost(NULL, $edit, t('Save block'));
+
+    $this->drupalGet('/admin/structure/block/manage/dfp/amp_sticky_ad/configure');
     $this->assertResponse(200);
     $edit = array(
       'regions[bartik]' => 'content',
@@ -86,6 +105,8 @@ class AmpDFPTestCase extends DrupalWebTestCase {
     $this->assertResponse(200);
     $this->assertPattern('|script src="https:\/\/cdn.ampproject.org\/v0\/amp-ad-0.1.js" async.*\scustom-element="amp-ad"|');
     $this->assertPattern('|amp-ad type="doubleclick"[\s].*layout="responsive"[\s].*height="250"[\s].*width="300"[\s].*data-slot="\/1\/"[\s].*json=\'{"targeting":{"position":"1"}}\'|');
+    $this->assertPattern('|script src="https:\/\/cdn.ampproject.org\/v0\/amp-sticky-ad-1.0.js" async.*\scustom-element="amp-sticky-ad"|');
+    $this->assertPattern('|amp-ad type="doubleclick"[\s].*height="50"[\s].*width="320"[\s].*data-slot="\/1\/sticky"[\s]|');
     $this->assertRaw('</amp-ad>');
   }
 }

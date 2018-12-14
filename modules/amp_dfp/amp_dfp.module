@@ -23,7 +23,11 @@ function amp_dfp_theme($existing, $type, $theme, $path) {
     'amp_dfp_tag' => array(
       'variables' => array(
         'tag' => NULL,
-        'slug' => NULL,
+        'width' => NULL,
+        'height' => NULL,
+        'layout' => NULL,
+        'amp_ad_json' => NULL,
+        'sticky' => NULL,
       ),
       'template' => 'amp-dfp-tag',
     ),
@@ -35,21 +39,37 @@ function amp_dfp_theme($existing, $type, $theme, $path) {
 /**
  * A callback to render amp_ad with js library added to head.
  *
+ * @params
+ *   $variables The theme variables.
  * @return
  *   The passed-in element with the js library necessary for the amp-ad
  *   element added to head.
  */
-function _amp_dfp_headers() {
-  $head_js = array(
-    '#tag' => 'script',
-    '#type' => 'html_tag',
-    '#attributes' => array(
-      'src' => 'https://cdn.ampproject.org/v0/amp-ad-0.1.js',
-      'async' => NULL,
-      'custom-element' => 'amp-ad'
-    ),
-  );
-  drupal_add_html_head($head_js, 'amp-ad');
+function _amp_dfp_headers($variables) {
+  if (!empty($variables['sticky'])) {
+    $head_js = array(
+      '#tag' => 'script',
+      '#type' => 'html_tag',
+      '#attributes' => array(
+        'src' => 'https://cdn.ampproject.org/v0/amp-sticky-ad-1.0.js',
+        'async' => NULL,
+        'custom-element' => 'amp-sticky-ad'
+      ),
+    );
+    drupal_add_html_head($head_js, 'amp-sticky-ad');
+  }
+  else {
+    $head_js = array(
+      '#tag' => 'script',
+      '#type' => 'html_tag',
+      '#attributes' => array(
+        'src' => 'https://cdn.ampproject.org/v0/amp-ad-0.1.js',
+        'async' => NULL,
+        'custom-element' => 'amp-ad'
+      ),
+    );
+    drupal_add_html_head($head_js, 'amp-ad');
+  }
 }
 
 /**
@@ -78,6 +98,13 @@ function amp_dfp_preprocess_amp_dfp_tag(&$variables) {
   $tag->global_targeting = $global_targeting;
 
   $variables['slot'] = $tag->adunit;
+  if (!empty($variables['tag']->settings['amp_sticky'])) {
+    if (count(sticky_ads($tag) < 1)) {
+      $variables['layout'] = NULL;
+      $variables['sticky'] = TRUE;
+      $variables['slot'] = '/' . trim($variables['slot'], '/') . '/sticky';
+    }
+  }
 
   // Prepare targeting arrays for JSON formatting
   $targeting = array();
@@ -96,7 +123,7 @@ function amp_dfp_preprocess_amp_dfp_tag(&$variables) {
   $to_json = array('targeting' => $targeting);
   $variables['amp_ad_json'] = drupal_json_encode($to_json);
 
-  _amp_dfp_headers();
+  _amp_dfp_headers($variables);
 }
 
 /**
@@ -125,6 +152,13 @@ function amp_dfp_form_ctools_export_ui_edit_item_form_alter(&$form, &$form_state
       '#weight' => 0,
       '#default_value' => isset($tag->settings['amp_size']) ? $tag->settings['amp_size'] : '',
     );
+    $form['tag_settings']['amp_sticky'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('AMP Sticky'),
+      '#description' => t('Makes the ad slot sticky. One one sticky ad slot is allowed per page.'),
+      '#weight' => 0,
+      '#default_value' => isset($tag->settings['amp_sticky']) ? $tag->settings['amp_sticky'] : 0,
+    );
 
     $form['#validate'][] = 'amp_dfp_ctools_export_ui_edit_item_form_validate';
     array_unshift($form['#submit'], 'amp_dfp_ctools_export_ui_edit_item_form_submit');
@@ -151,6 +185,10 @@ function amp_dfp_ctools_export_ui_edit_item_form_submit(&$form, &$form_state) {
   if (isset($form_state['values']['amp_size'])) {
     $form_state['values']['settings']['amp_layout'] = $form_state['values']['amp_layout'];
     $form_state['values']['settings']['amp_size'] = $form_state['values']['amp_size'];
+    $form_state['values']['settings']['amp_sticky'] = $form_state['values']['amp_sticky'];
+    if ($form_state['values']['amp_sticky'] == 1) {
+      $form_state['values']['settings']['amp_layout'] = 'nodisplay';
+    }
   }
 }
 
@@ -224,4 +262,26 @@ function amp_dfp_tag($machinename) {
   $render_array = dfp_tag($machinename);
   $render_array['dfp_wrapper']['tag']['#theme'] = 'amp_dfp_tag';
   return $render_array;
+}
+
+/**
+ * Ensures that only one sticky ad is placed on the page to avoid validation errors.
+ *
+ * @params $tag
+ *    The ad tag.
+ *
+ * @return $count
+ *    The number of ads.
+ */
+function sticky_ads($tag) {
+  static $count;
+
+  if (is_null($count)) {
+    $count++;
+  }
+  else {
+    watchdog('amp_dfp', 'DFP tag %machinename is being added to the page more than once.', array('%machinename' => $tag->machinename), WATCHDOG_WARNING);
+  }
+
+  return $count;
 }
