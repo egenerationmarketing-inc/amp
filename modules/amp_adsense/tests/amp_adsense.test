@@ -1,0 +1,84 @@
+<?php
+
+/**
+ * @file
+ * Tests for amp_adsense.module.
+ */
+
+class AmpAdsenseTestCase extends DrupalWebTestCase {
+  protected $profile = 'standard';
+
+  protected $admin_user;
+
+  public static function getInfo() {
+    return array(
+      'name' => 'AMP Adsense',
+      'description' => 'Tests for the AMP Adsense module.',
+      'group' => 'AMP',
+    );
+  }
+
+  protected function setUp() {
+    // Enable AMP module.
+    parent::setUp('field_ui', 'amp_test', 'adsense', 'adsense_managed', 'amp_adsense');
+
+    // Create Admin user.
+    $this->admin_user = $this->drupalCreateUser(array(
+        'administer content types',
+        'administer fields',
+        'administer site configuration',
+        'administer adsense',
+        'administer blocks',
+      )
+    );
+    $this->drupalLogin($this->admin_user);
+
+    // @todo Install the AMP theme.
+    //theme_enable(array('amptheme', 'ampsubtheme_example'));
+    //variable_set('amp_theme', 'ampsubtheme_example');
+
+    // Configure adsense.
+    variable_set('adsense_basic_id', '1234');
+  }
+
+  /**
+   * Test AMP Adsense.
+   */
+  public function testAmpAdsense() {
+    // Login as an admin user.
+    $this->drupalLogin($this->admin_user);
+
+
+    // Enable AMP display on article content.
+    $this->drupalGet("admin/structure/types/manage/article/display");
+    $this->assertResponse(200);
+    $edit = ["view_modes_custom[amp]" => '1'];
+    $this->drupalPost(NULL, $edit, t('Save'));
+
+    // Configure Adsense.
+    $this->drupalGet('admin/structure/block/manage/adsense_managed/0/configure');
+    $this->assertResponse(200);
+    $edit = array(
+      'info' => 'Adsense block',
+      'ad_format' => '300x250',
+      'ad_slot' => '0123456789',
+      'regions[bartik]' => 'content',
+    );
+    $this->drupalPost(NULL, $edit, t('Save block'));
+
+    // Create a node to test AMP metadata.
+    $node = $this->drupalCreateNode(array('type' => 'article'));
+
+    // Check the full display.
+    $this->drupalGet('node/' . $node->nid);
+    $this->assertResponse(200);
+    $this->assertNoRaw('<amp-ad');
+
+    // Check the AMP display.
+    $this->drupalGet('node/' . $node->nid, array('query' => array('amp' => TRUE)));
+    $this->assertResponse(200);
+    $this->assertPattern('|script src="https:\/\/cdn.ampproject.org\/v0\/amp-ad-0.1.js" async.*\scustom-element="amp-ad"|');
+    $this->assertPattern('|amp-ad type="adsense"[\s].*height="250"[\s].*width="300"[\s].*data-ad-client="1234"[\s].*data-ad-slot="0123456789"|');
+    $this->assertRaw('</amp-ad>');
+  }
+}

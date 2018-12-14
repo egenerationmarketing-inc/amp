@@ -97,16 +97,6 @@ function amp_library_test() {
  */
 function amp_theme() {
   $theme =  array(
-    'amp_ad' => array(
-      'variables' => array(
-        'adtype' => NULL,
-        'height' => NULL,
-        'width' => NULL,
-        'slot_attributes' => NULL,
-        'slot_attributes_array' => array()
-      ),
-      'template' => 'templates/amp-ad'
-    ),
     'amp_iframe' => array(
       'variables' => array(
         'iframe' => NULL

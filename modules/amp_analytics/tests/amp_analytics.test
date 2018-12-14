@@ -31,8 +31,8 @@ class AmpAnalyticsTestCase extends DrupalWebTestCase {
     );
     $this->drupalLogin($this->admin_user);
 
-    // Install the AMP theme.
-    theme_enable(array('amptheme', 'ampsubtheme_example'));
+    // @todo Install the AMP theme.
+    //theme_enable(array('amptheme', 'ampsubtheme_example'));
   }
 
   /**

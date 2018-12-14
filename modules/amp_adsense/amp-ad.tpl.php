@@ -15,3 +15,4 @@
 ?>
 <amp-ad type="<?php print $adtype; ?>" height="<?php print $height; ?>" width="<?php print $width; ?>" <?php print $slot_attributes; ?>>
 </amp-ad>
+

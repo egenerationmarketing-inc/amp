@@ -38,3 +38,54 @@ function amp_adsense_block_view_alter(&$data, $block) {
     }
   }
 }
+
+/**
+ * Implements hook_theme().
+ */
+function amp_adsense_theme() {
+  $theme =  array(
+    'amp_ad' => array(
+      'variables' => array(
+        'adtype' => NULL,
+        'height' => NULL,
+        'width' => NULL,
+        'slot_attributes' => NULL,
+        'slot_attributes_array' => array()
+      ),
+      'template' => 'amp-ad'
+    ),
+  );
+
+  return $theme;
+}
+
+/**
+ * A callback to render amp_ad with js library added to head.
+ *
+ * @return
+ *   The passed-in element with the js library necessary for the amp-ad
+ *   element added to head.
+ */
+function _amp_adsense_headers() {
+  $head_js = array(
+    '#tag' => 'script',
+    '#type' => 'html_tag',
+    '#attributes' => array(
+      'src' => 'https://cdn.ampproject.org/v0/amp-ad-0.1.js',
+      'async' => NULL,
+      'custom-element' => 'amp-ad'
+    ),
+  );
+  drupal_add_html_head($head_js, 'amp-ad');
+}
+
+/**
+ * Implements hook_preprocess_amp_ad().
+ */
+function amp_adsense_preprocess_amp_ad() {
+  if (!amp_is_amp_request()) {
+    return;
+  }
+
+  _amp_adsense_headers();
+}

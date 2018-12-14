@@ -4,3 +4,4 @@ core = 7.x
 dependencies[] = amp
 dependencies[] = adsense
 dependencies[] = adsense_managed
+files[] = tests/amp_adsense.test
