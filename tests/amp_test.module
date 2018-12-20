@@ -15,6 +15,6 @@ if (file_exists(DRUPAL_ROOT . '/../../vendor/autoload.php')) {
   require_once DRUPAL_ROOT . '/../../vendor/autoload.php';
 }
 // For sites that have the vendor folder inside sites/all folder.
-if (file_exists(getcwd() . '/sites/all/vendor/autoload.php')) {
-  require_once getcwd() . '/sites/all/vendor/autoload.php';
+if (file_exists(DRUPAL_ROOT . '/sites/all/vendor/autoload.php')) {
+  require_once DRUPAL_ROOT . '/sites/all/vendor/autoload.php';
 }
