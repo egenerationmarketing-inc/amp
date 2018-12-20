@@ -99,7 +99,7 @@ function amp_dfp_preprocess_amp_dfp_tag(&$variables) {
 
   $variables['slot'] = $tag->adunit;
   if (!empty($variables['tag']->settings['amp_sticky'])) {
-    if (count(sticky_ads($tag) < 1)) {
+    if (count(sticky_ads($tag)) < 1) {
       $variables['layout'] = NULL;
       $variables['sticky'] = TRUE;
       $variables['slot'] = '/' . trim($variables['slot'], '/') . '/sticky';
