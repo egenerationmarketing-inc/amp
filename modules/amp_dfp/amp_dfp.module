@@ -98,12 +98,9 @@ function amp_dfp_preprocess_amp_dfp_tag(&$variables) {
   $tag->global_targeting = $global_targeting;
 
   $variables['slot'] = $tag->adunit;
+
   if (!empty($variables['tag']->settings['amp_sticky'])) {
-    if (count(sticky_ads($tag)) < 1) {
-      $variables['layout'] = NULL;
-      $variables['sticky'] = TRUE;
-      $variables['slot'] = '/' . trim($variables['slot'], '/') . '/sticky';
-    }
+    $variables = array_merge($variables, get_amp_sticky_ad($tag));
   }
 
   // Prepare targeting arrays for JSON formatting
@@ -265,23 +262,29 @@ function amp_dfp_tag($machinename) {
 }
 
 /**
- * Ensures that only one sticky ad is placed on the page to avoid validation errors.
+ * Returns the sticky ad element.
+ * Ensures that only one sticky ad is placed on the page to avoid validation
+ * errors.
  *
  * @params $tag
  *    The ad tag.
  *
- * @return $count
- *    The number of ads.
+ * @return $sticky_ad
+ *    The sticky ad.
  */
-function sticky_ads($tag) {
+function get_amp_sticky_ad($tag) {
   static $count;
+  $sticky_ad = array();
 
   if (is_null($count)) {
+    $sticky_ad['layout'] = NULL;
+    $sticky_ad['sticky'] = TRUE;
+    $sticky_ad['slot'] = '/' . trim($tag->adunit, '/') . '/sticky';
     $count++;
   }
   else {
     watchdog('amp_dfp', 'DFP tag %machinename is being added to the page more than once.', array('%machinename' => $tag->machinename), WATCHDOG_WARNING);
   }
 
-  return $count;
+  return $sticky_ad;
 }
