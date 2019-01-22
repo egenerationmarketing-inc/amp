@@ -1513,6 +1513,8 @@ function amp_deliver_html_page($page_callback_result) {
       }
 
       $final_html = $full_html_processed;
+
+      drupal_alter('amp_final_html', $final_html);
     }
 
     // Output html to browser
