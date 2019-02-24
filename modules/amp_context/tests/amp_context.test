@@ -22,6 +22,8 @@ class AmpTestContext extends DrupalWebTestCase {
     // Enable modules.
     parent::setUp('field_ui', 'amp_test', 'context_ui', 'amp_context');
 
+    theme_enable(array('amptheme', 'ampsubtheme_example'));
+
     // Clean registry to make plugin available.
     registry_update();
 

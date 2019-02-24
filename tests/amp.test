@@ -22,6 +22,8 @@ class AmpTestCase extends DrupalWebTestCase {
     // Enable AMP module.
     parent::setUp('field_ui', 'amp_test');
 
+    theme_enable(array('amptheme', 'ampsubtheme_example'));
+
     // Create Admin user.
     $this->admin_user = $this->drupalCreateUser(array(
         'administer content types',
@@ -29,9 +31,6 @@ class AmpTestCase extends DrupalWebTestCase {
       )
     );
     $this->drupalLogin($this->admin_user);
-
-    // @todo Install the AMP theme.
-    //theme_enable(array('amptheme', 'ampsubtheme_example'));
   }
 
   /**

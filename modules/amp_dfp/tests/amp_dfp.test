@@ -22,6 +22,8 @@ class AmpDFPTestCase extends DrupalWebTestCase {
     // Enable AMP module.
     parent::setUp('field_ui', 'amp_test', 'dfp', 'amp_dfp');
 
+    theme_enable(array('amptheme', 'ampsubtheme_example'));
+
     // Create Admin user.
     $this->admin_user = $this->drupalCreateUser(array(
         'administer content types',

@@ -22,6 +22,8 @@ class AmpAdsenseTestCase extends DrupalWebTestCase {
     // Enable AMP module.
     parent::setUp('field_ui', 'amp_test', 'adsense', 'adsense_managed', 'amp_adsense');
 
+    theme_enable(array('amptheme', 'ampsubtheme_example'));
+
     // Create Admin user.
     $this->admin_user = $this->drupalCreateUser(array(
         'administer content types',
