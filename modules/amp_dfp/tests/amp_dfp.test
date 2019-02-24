@@ -83,14 +83,14 @@ class AmpDFPTestCase extends DrupalWebTestCase {
     $this->drupalGet('/admin/structure/block/manage/dfp/amp_ad/configure');
     $this->assertResponse(200);
     $edit = array(
-      'regions[bartik]' => 'content',
+      'regions[ampsubtheme_example]' => 'content',
     );
     $this->drupalPost(NULL, $edit, t('Save block'));
 
     $this->drupalGet('/admin/structure/block/manage/dfp/amp_sticky_ad/configure');
     $this->assertResponse(200);
     $edit = array(
-      'regions[bartik]' => 'content',
+      'regions[ampsubtheme_example]' => 'content',
     );
     $this->drupalPost(NULL, $edit, t('Save block'));
 

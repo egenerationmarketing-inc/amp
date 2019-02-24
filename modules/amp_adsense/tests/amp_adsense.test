@@ -64,7 +64,7 @@ class AmpAdsenseTestCase extends DrupalWebTestCase {
       'info' => 'Adsense block',
       'ad_format' => '300x250',
       'ad_slot' => '0123456789',
-      'regions[bartik]' => 'content',
+      'regions[ampsubtheme_example]' => 'content',
     );
     $this->drupalPost(NULL, $edit, t('Save block'));
 
