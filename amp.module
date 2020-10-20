@@ -46,6 +46,10 @@ function amp_preprocess_html(&$variables) {
       if ($key == 'big_pipe_detect_nojs') {
         unset($variables['page']['#attached']['html_head'][$key]);
       }
+      // Remove any other scripts that are being attached to the page.
+      if ($value[0]['#tag'] == 'script' && (!isset($value[0]['#attributes']['type']) || $value[0]['#attributes']['type'] != 'application/ld+json')) {
+        unset($variables['page']['#attached']['html_head'][$key]);
+      }
     }
 
     // Remove RDF and Metatag properties incompatible with AMP specification.
